@@ -8,13 +8,15 @@ function switchWindow(screen) { // funktion för att byta skärm (fade)
 		$(".resultScreen").css("display", 'flex').animate({opacity: "1"});
 	} else if (screen == "scoreBoard") {
 		$(".scoreBoard").css("display", 'flex').animate({opacity: "1"});
+		generateScoreboard();
 	}
 }
-
 $(".firstScreen h2:nth-of-type(1)").on("click", function() {
 	switchWindow("second");
 	importNewQuestion();
 	centerQuestion();
+	countStart = new Date().getTime() / 1000; //start
+	timer = setInterval(counter, 10);
 });
 $(".resultScreen h2:nth-of-type(1)").on("click", function(){
 	switchWindow("first");
@@ -24,15 +26,9 @@ $(".firstScreen h2:nth-of-type(2)").on("click", function() {
 	switchWindow("scoreBoard");
 });
 
-$(".firstScreenButton").hover(function(){ // ändrar utseende på knappen vid hover
-	$(this).addClass("buttonHover");
-}, function(){
-	$(this).removeClass("buttonHover");
-});
-
 var questions = {}
 var i = 1;
-var score = 0;
+var currentScore = 0;
 
 
 function questionGenerator(list) { // tar en lista med frågan först, sen svar, constructor
@@ -68,6 +64,13 @@ function newQuestion() {
 	}
 }
 
+//timer
+var countStart, count, time;
+var counter = function(){
+	count = (new Date().getTime() / 1000) - countStart; //tidsskillnad
+	time = count.toFixed(2);
+}
+
 function importNewQuestion() {
 	if(Object.keys(questionsToUse).length > 0 && questionsToUsedCounter <= 3) { //Körs så länge det finns frågor att använda och man inte har nått maxgränsen på hur många frågor man vill ska komma
 	var selectedQuestion = questions[newQuestion()];
@@ -87,8 +90,7 @@ function importNewQuestion() {
 					clicked = true;
 					var indexAbove = $(this).index(); - 1; //li:n ovanför
 					if($(this).index() + 1 == selectedQuestion.correct) { //kollar om svaret är rätt och ökar score med 1 ifall det stämmer
-						console.log("correct");
-						score += 1;
+						currentScore += 1;
 					}
 					$(".questionDiv ul li").removeClass("selected border");
 					$(this).addClass("selected");
@@ -103,23 +105,26 @@ function importNewQuestion() {
 			});
 		}
 	} else {
+		clearInterval(timer); //counter stop
+		$(".time").text(time);
+		var message = personalMessage[currentScore][randomNumberBetweenZeroAnd(personalMessage[currentScore].length - 1)] //väljer ett medelande i personalMessage arrayen beroende på score
 		switchWindow("result");
-		$("#tspan4155").text(score);
-		$(".resultScreen h3").text(personalMessage[score][randomNumberBetweenZeroAnd(personalMessage[score].length - 1)]);
-		setTimeout(function(){
+		$("#tspan4155").text(currentScore); //sätter poängen i stjärnan
+		$(".resultScreen h3").text(message); //visar ett meddelande
+		setTimeout(function(){ //animerar element när man kommer till resultat
 			$(".resultScreen h3").animate({opacity: "1"}, 800);
 			setTimeout(function(){
 				$(".socialMedia").animate({opacity: "1"}, 800);
 				setTimeout(function(){
 					$(".resultScreen h2").animate({opacity: "1"}, 800);
 				}, 500);
-			}, 300);	
+			}, 300);
 		}, 300);
-		console.log("done", score);
 		questionsToUse = Object.keys(questions);
 		questionsToUsedCounter = 1;
 		$(".questionDiv ul").empty();
-		score = 0;
+		addToScoreboard(currentScore, time);
+		currentScore = 0;
 	}
 }
 function centerQuestion() { //för att centrera frågan om den inte är större eller lika med bredden av sin parent
@@ -132,9 +137,9 @@ function centerQuestion() { //för att centrera frågan om den inte är större 
 		$(".questionP").css("text-align", "left");
 	}
 }
-function randomNumberBetweenZeroAnd(number){ //funktion som väljer ett slumpmässigt heltal mellan 0 och number 
+function randomNumberBetweenZeroAnd(number){ //funktion som väljer ett slumpmässigt heltal mellan 0 och number
 	this.value = Math.round(Math.random() * number);
-	return this.value; 
+	return this.value;
 }
 
 var personalMessage = [
@@ -148,5 +153,72 @@ var personalMessage = [
 	["7/10 1", "7/10 2", "7/10 3", "7/10 4"],
 	["8/10 1", "8/10 2", "8/10 3", "8/10 4"],
 	["9/10 1", "9/10 2", "9/10 3", "9/10 4"],
-	["10/10 1", "10/10 2", "10/10 3", "10/10 4"]
+	["Du är ett geni! Teknikcollege vill ha dig.", "Perfekt för Teknikcollege.", '"We got a badass over here."', "Grymt! Du ska gå på Teknikcollege."]
 ];
+if(!localStorage.scoreboard) { // körs ifall det inte finns en scoreboard i localstorage
+	scoreboard = [];
+	localStorage.scoreboard = scoreboard;
+} else if (!!localStorage.scoreboard) { // körs ifall det finns en scoreboard i localstorage
+	var newScoreboard = [];
+	var scoreboard = localStorage.scoreboard;
+	scoreboard = scoreboard.split(",");
+	for(i = 0; i < scoreboard.length;) { // ger scoreboarden sitt format (en lista med listor)
+		newScoreboard.push([scoreboard[i], scoreboard[i+1]]);
+		i += 2;
+	}
+	scoreboard = newScoreboard;
+}
+
+function addToScoreboard(score, time) { //lägger till score i scoreboard ifall det passar
+		if(scoreboard.length < 10) { //körs om scoreboarden inte är full
+			scoreboard.push([score, time]); //lägger till ett score
+			scoreboard.sort(function(a, b){ //sorterar i storleksordning först efter poäng sedan efter tid
+				if (a[0] == b[0]) {
+					return a[1]-b[1];
+				} else {
+					return b[0]-a[0];
+				}
+			});
+		}
+		else {
+			for(i = 0; i < scoreboard.length; i++) { //kollar om det nya resultatet passar in i scoreboarden
+				if(score >= scoreboard[i][0] && time <= scoreboard[i][1]) { //om poängen är lika eller bättre och tiden är lika eller bättre
+					scoreboard.pop();
+					scoreboard.splice(i, 0, [score, time]);
+					break;
+				}
+			}
+		}
+	localStorage.scoreboard = scoreboard; //sparar i localstorage
+}
+function generateScoreboard() { //bygger scoreboarden i scoreboard-skärmen
+	for(i = 0; i < 10; i++) { //skapar 10 scoreboard platser
+		$(".scoreBoard table").append("<tr><td><div></div></td><td><div></div></td><td><div></div></td></tr>");
+	}
+	var placeWidth = $(".scoreBoard table tr:nth-of-type(1) th:nth-of-type(1) span").width();
+	var scoreWidth = $(".scoreBoard table tr:nth-of-type(1) th:nth-of-type(2) span").width();
+	var timeWidth = $(".scoreBoard table tr:nth-of-type(1) th:nth-of-type(3) span").width();
+	for(i = 2; i <= scoreboard.length + 1; i++) { //ger varje plats ett resultat och en storlek så att formateringen blir bra
+		var placeScore = scoreboard[i - 2];
+		$(".scoreBoard table tr:nth-of-type("+ i +") td:nth-of-type(1) div").append(i - 1).css("width", placeWidth);
+		$(".scoreBoard table tr:nth-of-type("+ i +") td:nth-of-type(2) div").append(placeScore[0]).css("width", scoreWidth);
+		$(".scoreBoard table tr:nth-of-type("+ i +") td:nth-of-type(3) div").append(placeScore[1]).css("width", timeWidth);
+	}
+	if(scoreboard.length < 10)  { //fyller scoreboardtable:n med tomma resultat
+		for(i = scoreboard.length + 2; i <= 11; i++) {
+			$(".scoreBoard table tr:nth-of-type("+ i +") td:nth-of-type(1) div").append(i - 1).css("width", placeWidth);
+			$(".scoreBoard table tr:nth-of-type("+ i +") td:nth-of-type(2) div").append("-").css("width", scoreWidth);
+			$(".scoreBoard table tr:nth-of-type("+ i +") td:nth-of-type(3) div").append("-").css("width", timeWidth);
+		}
+	}
+};
+
+// this is the complete list of currently supported params you can pass to the plugin (all optional)
+var options = {
+  message: 'share this', // not supported on some apps (Facebook, Instagram)
+  subject: 'the subject', // fi. for email
+  files: ['img/buss.jpg', ''], // an array of filenames either locally or remotely
+  url: 'https://www.website.com/foo/#bar?a=b',
+  chooserTitle: 'Pick an app' // Android only, you can override the default share sheet title
+}
+window.plugins.socialsharing.shareWithOptions(options, onSuccess, onError);

@@ -9,6 +9,9 @@
     "installed_plugins": {
         "cordova-plugin-whitelist": {
             "PACKAGE_NAME": "com.TCspel.strikeTen"
+        },
+        "cordova-plugin-x-socialsharing": {
+            "PACKAGE_NAME": "com.TCspel.strikeTen"
         }
     },
     "dependent_plugins": {}
