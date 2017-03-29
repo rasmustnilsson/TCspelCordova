@@ -1,13 +1,13 @@
 function switchWindow(screen) { // funktion för att byta skärm (fade)
-	$("body > div").css({"display": 'none', "opacity": "0"});
+	$("body > div").css("display", "none").removeClass("fadeIn400");
 	if(screen == "first") {
-		$(".firstScreen").css("display", '').animate({opacity: "1"});
+		$(".firstScreen").css("display", '').addClass("fadeIn400");
 	} else if (screen == "second"){
-		$(".secondScreen").css("display", 'flex').animate({opacity: "1"});
+		$(".secondScreen").css("display", 'flex').addClass("fadeIn400");
 	} else if (screen == "result") {
-		$(".resultScreen").css("display", 'flex').animate({opacity: "1"});
+		$(".resultScreen").css("display", 'flex').addClass("fadeIn400");
 	} else if (screen == "scoreBoard") {
-		$(".scoreBoard").css("display", 'flex').animate({opacity: "1"});
+		$(".scoreBoard").css("display", 'flex').addClass("fadeIn400");
 		generateScoreboard();
 	}
 }
@@ -22,7 +22,7 @@ $(".firstScreen h2:nth-of-type(1)").on("click", function() {
 $(".resultScreen h2:nth-of-type(1)").on("click", function(){
 	if($(".resultScreen h2").css("opacity") == "1"){
 		switchWindow("first");
-		$(".info, .socialMedia, .resultScreen h2").css("opacity", "0");
+		$(".info, .socialMedia, .resultScreen h2").removeClass("fadeIn800");
 	}
 });
 $(".firstScreen h2:nth-of-type(2)").on("click", function() {
@@ -88,16 +88,16 @@ function importNewQuestion() {
 	var selectedQuestion = questions[newQuestion()];
 		$(".questionDiv ul").empty(); //tömmer ulen från gamla svar
 		var questionLength = Object.keys(selectedQuestion).length - 2; //ger längden på objektet med frågorna i
-		$(".secondScreen div div p span").text(selectedQuestion.question).css("opacity", '0').animate({opacity: "1"}, 800); //uppdaterar frågan
+		$(".secondScreen div div p span").text(selectedQuestion.question); //uppdaterar frågan
 		centerQuestion();
-		$(".questionLine").css("opacity", '0').animate({opacity: "1"}, 800); //fadear "Fråga"
-		$(".secondScreen .imagecontainer div").css({"opacity": '0', "background-image": 'url("img/' + selectedQuestion.img + '")'}).animate({opacity: "1"}, 800);
+		$(".secondScreen > div > div > div:last-child").addClass("fadeIn1200");
+		$(".secondScreen .imagecontainer div").css({"opacity": '0', "background-image": 'url("img/' + selectedQuestion.img + '")'}).addClass("fadeIn1200");
 		for(i = 1; i < questionLength; i++) {
 			var li = ".questionDiv ul li:nth-of-type(" + i + ")";
 			$(".questionDiv ul").append("<li><span class='nummer'>" + i + "</span></li>"); //lägger till en li
 			$(li).append(selectedQuestion["answer" + (i - 1)]); //ger li:n text från korrekt fråga
 			$(li).css("opacity", "0");
-			$(li).animate({opacity: "1"}, 700);
+			$(li).addClass("fadeIn1200");
 			$(li).on("click",function() { //onclick style
 				if(!clicked) {
 					clicked = true;
@@ -111,6 +111,7 @@ function importNewQuestion() {
 					$(".questionDiv ul li").delay(250).fadeOut(550);
 					$(".questionDiv ul li:nth-of-type(" + indexAbove + ")").addClass("border");
 					var newQuestionTimer = setTimeout(function() {
+						$(".secondScreen > div > div > div:last-child, .secondScreen .imagecontainer div").removeClass("fadeIn1200");
 						importNewQuestion();
 						clicked = false;
 					}, 500);
@@ -125,14 +126,14 @@ function importNewQuestion() {
 		$("#tspan4155").text(currentScore); //sätter poängen i stjärnan
 		$(".resultScreen h3").text(message); //visar ett meddelande
 		setTimeout(function(){ //animerar element när man kommer till resultat
-			$(".info").animate({opacity: "1"}, 800);
+			$(".info").addClass("fadeIn800");
 			setTimeout(function(){
-				$(".socialMedia").animate({opacity: "1"}, 800);
+				$(".socialMedia").addClass("fadeIn800");
 				setTimeout(function(){
-					$(".resultScreen h2").animate({opacity: "1"}, 800);
-				}, 500);
-			}, 300);
-		}, 300);
+					$(".resultScreen h2").addClass("fadeIn800");
+				}, 200);
+			}, 200);
+		}, 200);
 		questionsToUse = Object.keys(questions);
 		questionsToUsedCounter = 1;
 		$(".questionDiv ul").empty();
@@ -148,22 +149,22 @@ function centerQuestion() { //centrerar frågan med hjälp av padding
 	$(".secondScreen > div > div > div:last-child p span").css("padding" , padd);
 	$(".secondScreen > div > div > div:last-child p span").css("display", 'block');
 }
-function randomNumberBetweenZeroAnd(number){ //funktion som väljer ett slumpmässigt heltal mellan 0 och number
+function randomNumberBetweenZeroAnd(number){ // funktion som väljer ett slumpmässigt heltal mellan 0 och number
 	this.value = Math.round(Math.random() * number);
 	return this.value;
 }
 
 var personalMessage = [
-	["Otur.", "Har hört att ekonomi är ett bra program.", "0/10 3", "0/10 4"], // 0
-	["Bättre lycka nästa gång :)", "1/10 2", "1/10 3", "1/10 4"], //  1
-	["2/10 1", "2/10 2", "2/10 3", "2/10 4"], // 2
-	["3/10 1", "3/10 2", "3/10 3", "3/10 4"], // 3
-	["4/10 1", "4/10 2", "4/10 3", "4/10 4"], // 4
-	["5/10 1", "5/10 2", "5/10 3", "5/10 4"], // 5
-	["6/10 1", "6/10 2", "6/10 3", "6/10 4"], // 6
-	["Bättre än de flesta.", "7/10 2", "7/10 3", "7/10 4"], // 7
-	["Inte dåligt!", "8/10 2", "8/10 3", "8/10 4"], // 8
-	["Otroligt!!", "Imponerande, du passar perfekt på Teknikcollege.", "WOW!!", "9/10 4"], // 9
+	["Otur.", "Har hört att ekonomi är ett bra program."], // 0
+	["Bättre lycka nästa gång :)", "Du måste ha fått dem svåraste."], //  1
+	["Du kan bättre!"], // 2
+	["Försök igen, det här var bara uppvärmningen."], // 3
+	["Lite bättre kan du!"], // 4
+	["Helt okej."], // 5
+	["Teknikcollege är något för dig.", "Grymt!"], // 6
+	["Bättre än dem flesta.", "Dem klara du lätt! Du passar på Teknikcollege."], // 7
+	["Inte dåligt!", "Du är Teknikcollege material."], // 8
+	["Otroligt!!", "Imponerande, du passar perfekt på Teknikcollege.", "WOW!!", "utomordentligt!"], // 9
 	["Du är ett geni! Teknikcollege vill ha dig.", "Perfekt för Teknikcollege.", '"We got a badass over here."', "Grymt! Du ska gå på Teknikcollege."] // 10
 ];
 if(!localStorage.scoreboard) { // körs ifall det inte finns en scoreboard i localstorage
