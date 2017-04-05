@@ -97,7 +97,7 @@ html, body, .screen {
 	opacity: 0;
 }
 .secondScreen > div > div > div:last-child p {
-	flex-grow: 1;
+	height: 1em;
 	padding: 0 16px;
 }
 .secondScreen > div > div > div:last-child p span {
@@ -109,7 +109,6 @@ html, body, .screen {
 	text-align: center;
 	border-bottom: 1px solid #D39100;
 	margin: 0 40px 8px;
-	flex-grow: 1;
 	display: flex;
 	justify-content: flex-end;
 	flex-direction: column;
@@ -168,9 +167,6 @@ html, body, .screen {
 	justify-content: space-around;
 	background: linear-gradient(to right, rgba(212,228,239,0.5) 0%, rgba(134,174,204,0.5) 50%, rgba(212,228,239,0.5) 100%);
 }
-.info, .resultScreen h2 {
-	opacity: 0;
-}
 @keyframes fadeIn1200 {
 	0% {opacity: 0;}
 	100% {opacity: 1;}
@@ -191,6 +187,20 @@ html, body, .screen {
 }
 .fadeIn400 {
 	animation: fadeIn400 0.4s linear 0s 1 normal forwards;
+}
+@keyframes fadeIn200 {
+	0% {opacity: 0;}
+	100% {opacity: 1;}
+}
+.fadeIn200 {
+	animation: fadeIn200 0.2s linear 0s 1 normal forwards;
+}
+@keyframes fadeOut200 {
+	0% {opacity: 1;}
+	100% {opacity: 0;}
+}
+.fadeOut200 {
+	animation: fadeOut200 0.2s linear 0s 1 normal forwards;
 }
 .time {
 	color: #fff;
@@ -278,7 +288,6 @@ html, body, .screen {
 .socialMedia {
 	display: inline-flex;
 	flex-direction: column;
-	opacity: 0;
 }
 .socialMedia div:first-of-type {
 	background-color: #3b5998;

@@ -22,7 +22,6 @@ $(".firstScreen h2:nth-of-type(1)").on("click", function() {
 $(".resultScreen h2:nth-of-type(1)").on("click", function(){
 	if($(".resultScreen h2").css("opacity") == "1"){
 		switchWindow("first");
-		$(".info, .socialMedia, .resultScreen h2").removeClass("fadeIn800");
 	}
 });
 $(".firstScreen h2:nth-of-type(2)").on("click", function() {
@@ -49,17 +48,17 @@ function questionGenerator(list) { // tar en lista med frågan först, sen svar,
 }
 
 // Första är en fråga, och sista är rättsvarsindex, och dem i mitten är frågor
-questions.question1 = new questionGenerator(["Vilket håll åker bussen?", "Höger", "Vänster", "Står still","buss.jpg", 2]);
+questions.question1 = new questionGenerator(["Om bussen rör sig framåt vilket håll åker den då?", "Höger", "Vänster", "Står still","buss.jpg", 2]);
 questions.question2 = new questionGenerator(["Det finns 10 fiskar i ett akvarium. 2 av dem sjönk. 3 av dem simmade iväg. 2 av dem dog. Hur många finns kvar?", "8", "10", "3", "5","akvarium.svg", 2]);
 questions.question3 = new questionGenerator(["Två personer sitter i en kanot, en paddlar åt väst och den andra åt ost. vilket håll åkte dem?", "Ingenstans", "Väst", "Ost","Teknikcollege.png", 2]);
-questions.question4 = new questionGenerator(["Vilket horisontellt sträck är längst?", "Övre", "Undre", "De är lika långa","strack.svg", 3]);
+questions.question4 = new questionGenerator(["Vilket horisontellt streck är längst?", "Övre", "Undre", "De är lika långa","strack.svg", 3]);
 questions.question5 = new questionGenerator(["Om fyra barn äter fyra godispåsar på fyra dagar, så äter femtiosju barn femtiosju godispåsar på ... dagar?", "57 dagar", "4 dagar", "10 dagar","child-575527.png", 2]);
-questions.question6 = new questionGenerator(["Vilket av dessa fyra hus, A, B, C och D kan man rita utan att lyfta pennan från pappret eller dra samma sträck två gånger?", "B", "D", "C","hus.svg", 3]);
+questions.question6 = new questionGenerator(["Vilket av dessa tre hus, A, B och C kan man rita utan att lyfta pennan från pappret eller dra samma sträck två gånger?", "A", "B", "C","hus.svg", 3]);
 questions.question7 = new questionGenerator(["Om du går 1km söderut, 1km västerut, 1km norrut och kommer tillbaka till samma ställe var är du då?","Nordpolen", "Ekvatorn", "Kräftans vändkrets","earth.png", 1]);
 questions.question8 = new questionGenerator(["Vilken av figurerna A till D avslutar serien bäst?","A", "B", "C","D", "iqfraga.png", 4]);
 questions.question9 = new questionGenerator(["Två män gräver en grop på två dagar. Hur lång tid tar det då för en man att gräva en halv grop?","Går inte", "2 dagar", "1 dag", "digging.jpeg", 1]);
 questions.question10 = new questionGenerator(['Vem kan säga: "Du är min son, men jag är inte din far"?',"Ingen", "Pappa", "Farfar/Morfar", "Mamma", "familj.png", 4]);
-questions.question11 = new questionGenerator(['Vid ett möte skakar 10 personer hand med varandra. Hur många handskakningar blir det totalt?',"100", "44", "50", "90", "handshake.png", 4]);
+questions.question11 = new questionGenerator(['Vid ett möte skakar 10 personer hand med varandra. Hur många handskakningar blir det totalt?',"100", "45", "50", "90", "handshake.png", 2]);
 
 
 var questionsToUse = Object.keys(questions);
@@ -84,20 +83,21 @@ var counter = function(){
 }
 
 function importNewQuestion() {
-	if(Object.keys(questionsToUse).length > 0 && questionsToUsedCounter <= 11) { //Körs så länge det finns frågor att använda och man inte har nått maxgränsen på hur många frågor man vill ska komma
+	if(Object.keys(questionsToUse).length > 0 && questionsToUsedCounter <= 10) { //Körs så länge det finns frågor att använda och man inte har nått maxgränsen på hur många frågor man vill ska komma
 	var selectedQuestion = questions[newQuestion()];
 		$(".questionDiv ul").empty(); //tömmer ulen från gamla svar
 		var questionLength = Object.keys(selectedQuestion).length - 2; //ger längden på objektet med frågorna i
 		$(".secondScreen div div p span").text(selectedQuestion.question); //uppdaterar frågan
 		centerQuestion();
-		$(".secondScreen > div > div > div:last-child").addClass("fadeIn1200");
-		$(".secondScreen .imagecontainer div").css({"opacity": '0', "background-image": 'url("img/' + selectedQuestion.img + '")'}).addClass("fadeIn1200");
+		$(".secondScreen > div > div > div:last-child").addClass("fadeIn200");
+		$(".secondScreen .imagecontainer div").css({"opacity": '0', "background-image": 'url("img/' + selectedQuestion.img + '")'}).addClass("fadeIn200");
 		for(i = 1; i < questionLength; i++) {
+			centerQuestion();
 			var li = ".questionDiv ul li:nth-of-type(" + i + ")";
 			$(".questionDiv ul").append("<li><span class='nummer'>" + i + "</span></li>"); //lägger till en li
 			$(li).append(selectedQuestion["answer" + (i - 1)]); //ger li:n text från korrekt fråga
 			$(li).css("opacity", "0");
-			$(li).addClass("fadeIn1200");
+			$(li).addClass("fadeIn200");
 			$(li).on("click",function() { //onclick style
 				if(!clicked) {
 					clicked = true;
@@ -111,9 +111,12 @@ function importNewQuestion() {
 					$(".questionDiv ul li").delay(250).fadeOut(550);
 					$(".questionDiv ul li:nth-of-type(" + indexAbove + ")").addClass("border");
 					var newQuestionTimer = setTimeout(function() {
-						$(".secondScreen > div > div > div:last-child, .secondScreen .imagecontainer div").removeClass("fadeIn1200");
-						importNewQuestion();
-						clicked = false;
+						$(".fadeIn200").addClass("fadeOut200").removeClass("fadeIn200");
+						setTimeout(function(){
+							$(".fadeOut200").removeClass("fadeOut200");
+							importNewQuestion();
+							clicked = false;
+						}, 200);
 					}, 500);
 				}
 			});
@@ -125,15 +128,6 @@ function importNewQuestion() {
 		switchWindow("result");
 		$("#tspan4155").text(currentScore); //sätter poängen i stjärnan
 		$(".resultScreen h3").text(message); //visar ett meddelande
-		setTimeout(function(){ //animerar element när man kommer till resultat
-			$(".info").addClass("fadeIn800");
-			setTimeout(function(){
-				$(".socialMedia").addClass("fadeIn800");
-				setTimeout(function(){
-					$(".resultScreen h2").addClass("fadeIn800");
-				}, 200);
-			}, 200);
-		}, 200);
 		questionsToUse = Object.keys(questions);
 		questionsToUsedCounter = 1;
 		$(".questionDiv ul").empty();
@@ -205,7 +199,7 @@ function addToScoreboard(score, time) { //lägger till score i scoreboard ifall 
 }
 function generateScoreboard() { //bygger scoreboarden i scoreboard-skärmen
 	$(".table").empty(); //tömmer scoreBoarden
-	$(".table").append("<div><span><span>Place</span></span><span><span>Score</span></span><span><span>Time</span></span></div>");
+	$(".table").append("<div><span><span>Place</span></span><span><span>Score</span></span><span><span>Time (s)</span></span></div>");
 	for(i = 0; i < 10; i++) { //skapar 10 scoreboard platser
 		$(".table").append("<div><span><span></span></span><span><span></span></span><span><span></span></span></div>");
 	}
